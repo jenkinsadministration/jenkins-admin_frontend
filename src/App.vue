@@ -26,7 +26,7 @@
         @click.stop="sideNav = !sideNav"
         class="hidden-sm-and-up "></v-toolbar-side-icon>
       <v-toolbar-title>
-        <router-link to="/" tag="span" style="cursor: pointer">Firebase Auth Vuex</router-link>
+        <router-link to="/" tag="span" style="cursor: pointer">Jenkins Administration</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
@@ -49,7 +49,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <main>
+    <main style="height: 100%">
       <router-view></router-view>
     </main>
   </v-app>
@@ -70,6 +70,7 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
+            {icon: 'folder', title: 'Projects', link: '/projects'},
             {icon: 'person', title: 'Profile', link: '/profile'}
           ]
         }

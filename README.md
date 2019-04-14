@@ -29,7 +29,7 @@ firebase.initializeApp({
 # Git Clone Project
 git clone git@github.com:aofdev/vue-firebase-auth-vuex.git
 
-# Cd project
+# Cd job
 cd vue-firebase-auth-vuex
 
 # install dependencies

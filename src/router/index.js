@@ -6,6 +6,12 @@ const Signup = () => import('@/components/User/Signup')
 const Signin = () => import('@/components/User/Signin')
 import AuthGuard from './auth-guard'
 
+const ProjectIndex = () => import('@/components/Project/Index')
+const ProjectEdit = () => import('@/components/Project/Edit')
+const ProjectNew = () => import('@/components/Project/New')
+
+const JobNew = () => import('@/components/Job/New')
+
 Vue.use(Router)
 
 export default new Router({
@@ -30,6 +36,26 @@ export default new Router({
       path: '/signin',
       name: 'Signin',
       component: Signin
+    },
+    {
+      path: '/projects',
+      name: 'ProjectIndex',
+      component: ProjectIndex
+    },
+    {
+      path: '/projects/:id/edit',
+      name: 'ProjectEdit',
+      component: ProjectEdit
+    },
+    {
+      path: '/projects/new',
+      name: 'ProjectNew',
+      component: ProjectNew
+    },
+    {
+      path: '/projects/:projectId/jobs/new',
+      name: 'JobNew',
+      component: JobNew
     }
   ],
   mode: 'history'
