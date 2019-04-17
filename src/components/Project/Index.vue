@@ -27,8 +27,18 @@
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </v-layout>
 
+        <v-alert
+          :value="true"
+          color="info"
+          icon="info"
+          outline
+          v-if="!loadingScreen && projects.length === 0"
+        >
+          No projects found. Try creating a new one.
+        </v-alert>
+
         <v-layout
-          v-if="!loadingScreen"
+          v-if="!loadingScreen && projects.length > 0"
           v-for="item in projects"
           :key="item.id"
           row mt-3
@@ -82,10 +92,14 @@
 
               </v-toolbar>
 
+              <v-subheader inset v-if="item.data.hasOwnProperty('build_jobs')">Build Jobs</v-subheader>
+
               <v-list-tile
-                v-if="item.hasOwnProperty('jobs')"
-                v-for="(subitem, index) in item.jobs"
-                :key="index"
+                v-if="item.data.hasOwnProperty('build_jobs')"
+                v-for="(job, id) in item.data.jobs.build"
+                :key="id"
+                style="cursor: pointer"
+                @click="$router.push('/projects/' + item.id + '/jobs/build/' + id)"
                 avatar
               >
                 <v-list-tile-avatar>
@@ -93,7 +107,7 @@
                 </v-list-tile-avatar>
 
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ subitem.data.name }}</v-list-tile-title>
+                  <v-list-tile-title>{{ job.platform }}</v-list-tile-title>
                 </v-list-tile-content>
 
                 <v-list-tile-action>
@@ -102,6 +116,32 @@
                   </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
+
+              <v-subheader inset v-if="item.data.hasOwnProperty('test_jobs')">Test Jobs</v-subheader>
+
+              <v-list-tile
+                v-if="item.data.hasOwnProperty('test_jobs')"
+                v-for="(job, id) in item.data.jobs.test"
+                :key="id"
+                style="cursor: pointer"
+                @click="$router.push('/projects/' + item.id + '/jobs/test/' + id)"
+                avatar
+              >
+                <v-list-tile-avatar>
+                  <v-icon>extension</v-icon>
+                </v-list-tile-avatar>
+
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ job.platform }}{{ job.platform !== job.browser ? ' - ' + job.browser : '' }}</v-list-tile-title>
+                </v-list-tile-content>
+
+                <v-list-tile-action>
+                  <v-btn icon ripple>
+                    <v-icon color="grey lighten-1">chevron_right</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+              </v-list-tile>
+
             </v-card>
           </v-flex>
         </v-layout>
@@ -161,12 +201,12 @@
         projectToDelete: null,
         projectNameToDelete: '',
         items_menu: [
-          {
-            title: 'Add Job',
-            icon: 'add',
-            action: 'add_job',
-            color: 'blue'
-          },
+          // {
+          //   title: 'Add Job',
+          //   icon: 'add',
+          //   action: 'add_job',
+          //   color: 'blue'
+          // },
           {
             title: 'Edit',
             icon: 'edit',
@@ -217,7 +257,6 @@
 
       confirm_delete () {
         this.loadingDelete = true
-        console.log(this.projectToDelete.id)
         axios
           .delete('http://localhost:5000/jenkinsadmin/us-central1/api/projects/' + this.projectToDelete.id)
           .then(() => {

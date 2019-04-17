@@ -21,10 +21,11 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar dark class="primary">
-      <v-toolbar-side-icon
-        @click.stop="sideNav = !sideNav"
-        class="hidden-sm-and-up "></v-toolbar-side-icon>
+    <v-toolbar fixed dark class="primary">
+      <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up "></v-toolbar-side-icon>
+      <v-toolbar-side-icon class="hidden-xs-only">
+        <img src="/static/img/jenkins_logo.png" style="top: -14px; position: relative;">
+      </v-toolbar-side-icon>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer">Jenkins Administration</router-link>
       </v-toolbar-title>
@@ -71,6 +72,7 @@
         if (this.userIsAuthenticated) {
           menuItems = [
             {icon: 'folder', title: 'Projects', link: '/projects'},
+            {icon: 'widgets', title: 'Plugins', link: '/plugins'},
             {icon: 'person', title: 'Profile', link: '/profile'}
           ]
         }
@@ -91,4 +93,37 @@
 
 <style lang="stylus">
   @import './stylus/main'
+
+  main {
+    margin-top: 80px;
+  }
+
+  .v-card {
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .14);
+    border-radius: 6px;
+  }
+
+  .v-card .v-toolbar {
+    width: 96%;
+    left: 2%;
+    border-radius: 6px;
+    top: -20px;
+  }
+
+  div[role="listitem"] {
+    cursor: pointer;
+  }
+
+  .v-card .v-toolbar .v-toolbar__content {
+    margin-top: 30px;
+  }
+
+  .v-list__tile__action {
+    min-width: 36px;
+  }
+
+  .v-list__tile__action .v-input--checkbox {
+    margin-top: 10px;
+  }
+
 </style>

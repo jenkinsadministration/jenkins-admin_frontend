@@ -10,7 +10,10 @@ const ProjectIndex = () => import('@/components/Project/Index')
 const ProjectEdit = () => import('@/components/Project/Edit')
 const ProjectNew = () => import('@/components/Project/New')
 
-const JobNew = () => import('@/components/Job/New')
+const JobShow = () => import('@/components/Job/Show')
+const JobEdit = () => import('@/components/Job/Edit')
+
+const PluginsIndex = () => import('@/components/Configuration/Plugins')
 
 Vue.use(Router)
 
@@ -53,9 +56,19 @@ export default new Router({
       component: ProjectNew
     },
     {
-      path: '/projects/:projectId/jobs/new',
-      name: 'JobNew',
-      component: JobNew
+      path: '/projects/:projectId/jobs/:type/:id',
+      name: 'JobShow',
+      component: JobShow
+    },
+    {
+      path: '/projects/:projectId/jobs/:type/:id/edit',
+      name: 'JobEdit',
+      component: JobEdit
+    },
+    {
+      path: '/plugins',
+      name: 'PluginsIndex',
+      component: PluginsIndex
     }
   ],
   mode: 'history'

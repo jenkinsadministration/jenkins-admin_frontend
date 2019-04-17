@@ -13,7 +13,7 @@
               <v-layout row>
                 <v-flex xs12>
                   <div class="text-xs-center">
-                    <v-btn round color="red" dark :disabled="loading" :loading="loading"
+                    <v-btn large block color="red" dark :disabled="loading" :loading="loading"
                            @click.prevent="onSigninGoogle">Register with Google
                       <v-icon right dark>lock_open</v-icon>
                       <span slot="loader" class="custom-loader">

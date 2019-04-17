@@ -17,6 +17,7 @@
           lazy-validation
           v-model="valid"
           novalidate
+          @submit="submit"
         >
           <v-card class="mx-auto pa-4">
 
@@ -82,7 +83,8 @@
     },
 
     methods: {
-      submit () {
+      submit (e) {
+        e.preventDefault()
         this.loadingSave = true
         this.$validator.validateAll()
           .then((value) => {
