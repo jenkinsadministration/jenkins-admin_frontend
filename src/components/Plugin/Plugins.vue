@@ -211,7 +211,7 @@
 
     methods: {
       initialize () {
-        axios.get('http://localhost:5000/jenkinsadmin/us-central1/api/plugins')
+        axios.get(process.env.API_URI + '/plugins')
           .then(plugins => {
             this.plugins = plugins.data
             this.loadingScreen = false
@@ -236,7 +236,7 @@
         this.loadingDelete = true
         axios
           .delete(
-            'http://localhost:5000/jenkinsadmin/us-central1/api/plugins/' + this.selectedId)
+            process.env.API_URI + '/plugins/' + this.selectedId)
           .then(
             () => {
               self.loadingDelete = false
@@ -259,7 +259,7 @@
         if (this.editedIndex > -1) {
           axios
             .put(
-              'http://localhost:5000/jenkinsadmin/us-central1/api/plugins/' + this.selectedId,
+              process.env.API_URI + '/plugins/' + this.selectedId,
               this.editedItem
             )
             .then(
@@ -273,7 +273,7 @@
           console.log(this.editedItem)
           axios
             .post(
-              'http://localhost:5000/jenkinsadmin/us-central1/api/plugins',
+              process.env.API_URI + '/plugins',
               this.editedItem
             )
             .then(
