@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer fixed temporary v-model="sideNav">
+    <v-navigation-drawer fixed temporary v-model="sideNav" v-if="this.$route.name !== 'Signin'">
       <v-list>
         <v-list-tile
           v-for="item in menuItems"
@@ -21,7 +21,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar fixed dark class="primary">
+    <v-toolbar fixed dark class="primary" v-if="this.$route.name !== 'Signin'">
       <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up "></v-toolbar-side-icon>
       <v-toolbar-side-icon class="hidden-xs-only">
         <img src="/static/img/jenkins_logo.png" style="top: -14px; position: relative;">
@@ -66,13 +66,15 @@
     computed: {
       menuItems () {
         let menuItems = [
-          {icon: 'face', title: 'Sign up', link: '/signup'},
+          // {icon: 'face', title: 'Sign up', link: '/signup'},
           {icon: 'lock_open', title: 'Sign in', link: '/signin'}
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            {icon: 'folder', title: 'Projects', link: '/projects'},
+            {icon: 'work', title: 'Projects', link: '/projects'},
             {icon: 'widgets', title: 'Plugins', link: '/plugins'},
+            {icon: 'devices', title: 'Platforms', link: '/platforms'},
+            {icon: 'settings', title: 'Configuration', link: '/configurations'},
             {icon: 'person', title: 'Profile', link: '/profile'}
           ]
         }
@@ -93,6 +95,11 @@
 
 <style lang="stylus">
   @import './stylus/main'
+  @import url('https://fonts.googleapis.com/css?family=Lato|Muli');
+
+  * {
+    font-family: 'Muli', 'Lato', sans-serif;
+  }
 
   main {
     margin-top: 80px;

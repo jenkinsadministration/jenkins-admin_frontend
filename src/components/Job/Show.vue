@@ -60,7 +60,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="mt-4">
+        <v-card class="mt-4" v-if="job.setup.parameters.length > 0">
           <v-card-text>
             <div class="headline mb-3">Parameters</div>
 
@@ -154,10 +154,13 @@
       this.id = this.$route.params.id
       this.type = this.$route.params.type
       axios
-        .get('http://localhost:5000/jenkinsadmin/us-central1/api/projects/' + this.projectId + '/jobs/' + this.type + '/' + this.id)
+        .get(process.env.API_URI + '/projects/' + this.projectId + '/jobs/' + this.type + '/' + this.id)
         .then(response => {
           this.loadingScreen = false
           this.job = response.data.data
+          if (!this.job.setup.hasOwnProperty('parameters')) {
+            this.job.setup['parameters'] = []
+          }
         })
     },
 

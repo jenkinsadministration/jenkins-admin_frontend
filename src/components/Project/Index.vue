@@ -201,12 +201,6 @@
         projectToDelete: null,
         projectNameToDelete: '',
         items_menu: [
-          // {
-          //   title: 'Add Job',
-          //   icon: 'add',
-          //   action: 'add_job',
-          //   color: 'blue'
-          // },
           {
             title: 'Edit',
             icon: 'edit',
@@ -232,7 +226,7 @@
       load_projects () {
         this.loadingScreen = true
         axios
-          .get('http://localhost:5000/jenkinsadmin/us-central1/api/projects')
+          .get(process.env.API_URI + '/projects')
           .then(response => {
             this.projects = response.data
             this.loadingScreen = false
@@ -258,7 +252,7 @@
       confirm_delete () {
         this.loadingDelete = true
         axios
-          .delete('http://localhost:5000/jenkinsadmin/us-central1/api/projects/' + this.projectToDelete.id)
+          .delete(process.env.API_URI + '/projects/' + this.projectToDelete.id)
           .then(() => {
             this.loadingDelete = false
             this.dialogDelete = false

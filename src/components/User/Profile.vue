@@ -13,8 +13,7 @@
               size="300px"
               style="margin-top: -150px; height: 300px; width: 300px; border-radius: 50%;"
               :src="user.photoUrl"
-            >
-            </v-img>
+            ></v-img>
             <h1 class="card-title font-weight-light mt-3">{{ user.name }}</h1>
             <h3 class="category text-gray font-weight-thin mb-3 mt-2">{{ user.email }}</h3>
             <p class="card-description font-weight-light">

@@ -2,7 +2,7 @@
   <v-container grid-list-xl>
     <v-layout align-center row>
       <v-flex>
-        <h3 class="display-3">Edit Job</h3>
+        <h3 class="display-3">Edit a {{scopeName}} Platform</h3>
         <v-divider class="my-3"></v-divider>
       </v-flex>
     </v-layout>
@@ -25,105 +25,44 @@
               <div class="headline mb-3">General Information</div>
 
               <v-text-field
-                v-model="job.full_name"
-                label="Path"
-                readonly
-                :success="true"
+                v-model="platform.name"
+                v-validate="'required'"
+                :error-messages="errors.collect('name')"
+                label="Name"
+                data-vv-name="name"
+                required
+                :success="errors.collect('name').length < 1"
               ></v-text-field>
 
-              <v-text-field
-                v-model="job.setup.template"
-                label="Template"
-                readonly
-                :success="true"
-              ></v-text-field>
-
-              <v-text-field
-                v-model="job.platform"
-                label="Platform"
-                readonly
-                :success="true"
-              ></v-text-field>
-
-              <v-text-field
-                v-if="job.browser && job.browser !== job.platform"
-                v-model="job.browser"
-                label="Browser"
-                readonly
-                :success="true"
-              ></v-text-field>
-
+              <v-checkbox
+                v-model="platform.has_browsers"
+                label="Has browsers"
+                hide-details
+              ></v-checkbox>
             </v-card-text>
           </v-card>
 
-          <v-card class="mt-4">
+          <v-card class="mt-4" v-if="platform.has_browsers">
             <v-card-text>
-              <div class="headline mb-3">Source Code Management</div>
-
-              <v-text-field
-                v-model="job.setup.repository"
+              <div class="headline mb-3">Browsers</div>
+              <v-combobox
+                v-model="platform.browsers"
+                :items="platform.browsers"
                 v-validate="'required'"
-                :error-messages="errors.collect('repository')"
-                label="Repository"
-                data-vv-name="repository"
-                required
-                :success="errors.collect('repository').length < 1"
-              ></v-text-field>
-
-              <v-text-field
-                v-model="job.setup.branch"
-                v-validate="'required'"
-                :error-messages="errors.collect('branch')"
-                label="Branch"
-                data-vv-name="branch"
-                required
-                :success="errors.collect('branch').length < 1"
-              ></v-text-field>
-
+                :error-messages="errors.collect('browsers')"
+                label="Browsers"
+                data-vv-name="browsers"
+                multiple
+                chips
+                :success="platform.browsers.length > 0"
+              ></v-combobox>
             </v-card-text>
           </v-card>
 
-          <v-card class="mt-4">
-            <v-card-text>
-              <div class="headline mb-3">Run Setup</div>
-
-              <v-text-field
-                v-model="job.setup.cron.build"
-                :error-messages="errors.collect('cron_build')"
-                label="Build Cron"
-                data-vv-name="cron_build"
-                required
-                :success="errors.collect('cron_build').length < 1"
-              ></v-text-field>
-
-              <v-text-field
-                v-model="job.setup.cron.poll_scm"
-                :error-messages="errors.collect('cron_poll_scm')"
-                label="Poll SCM Cron"
-                data-vv-name="cron_poll_scm"
-                required
-                :success="errors.collect('cron_poll_scm').length < 1"
-              ></v-text-field>
-
-              <v-text-field
-                v-model="job.setup.log_rotate"
-                type="number"
-                min="-1"
-                step="1"
-                v-validate="'required'"
-                :error-messages="errors.collect('log_rotate')"
-                label="Max Builds to Save"
-                data-vv-name="log_rotate"
-                required
-                :success="errors.collect('log_rotate').length < 1"
-              ></v-text-field>
-
-            </v-card-text>
-          </v-card>
 
           <v-card class="mt-4">
             <v-card-text>
-              <div class="headline mb-3">Parameters</div>
+              <div class="headline mb-3">Default Parameters</div>
               <v-card
                 v-for="(param, index) in parameters"
                 :key="index"
@@ -153,6 +92,7 @@
                     label="Default Value"
                     :success="errors.collect('default_value').length < 1"
                   ></v-text-field>
+
                   <v-combobox
                     v-if="param.type === 'choice'"
                     v-model="param.values"
@@ -228,15 +168,10 @@
             </v-card-text>
           </v-card>
 
-          <v-card class="mt-4" v-if="false">
-            <v-card-text>
-              <div class="headline mb-3">Athenea</div>
-            </v-card-text>
-          </v-card>
 
           <v-divider class="mt-4 mb-3"></v-divider>
 
-          <v-btn to="/projects">Back</v-btn>
+          <v-btn to="/platforms">Back</v-btn>
           <v-btn @click="submit"
                  class="secondary"
                  :disabled="$validator.errors.count() > 0 || loadingSave"
@@ -260,40 +195,21 @@
 
   export default {
     $_veeValidate: {
-      validator: 'edit'
+      validator: 'new'
     },
 
     data: () => ({
       valid: true,
       loadingScreen: false,
       loadingSave: false,
-      projectId: '',
-      type: '',
+      scopeName: '',
+      scope: '',
       id: '',
-      job: {
-        full_name: '',
-        platform: '',
-        setup: {
-          repository: '',
-          branch: '',
-          log_rotate: '',
-          cron: {
-            build: '',
-            poll_scm: ''
-          },
-          template: '',
-          parameters: [
-            {
-              name: '',
-              maven_key: '',
-              is_parameterizable: true,
-              is_maven_param: true,
-              default_value: '',
-              type: 'string',
-              description: ''
-            }
-          ]
-        }
+      platform: {
+        name: '',
+        has_browsers: false,
+        browsers: [],
+        default_parameters: []
       },
       parameters: [],
       parameters_types: [
@@ -309,26 +225,24 @@
       ],
       dictionary: {
         custom: {
-          full_name: {
-            required: 'Path can not be empty'
+          name: {
+            required: 'Name can not be empty'
           }
         }
       }
     }),
 
     mounted () {
-      this.projectId = this.$route.params.projectId
+      this.scope = this.$route.params.scope
+      this.scopeName = this.scope.charAt(0).toUpperCase() + this.scope.substring(1)
       this.id = this.$route.params.id
-      this.type = this.$route.params.type
       axios
-        .get(process.env.API_URI + '/projects/' + this.projectId + '/jobs/' + this.type + '/' + this.id)
+        .get(`${process.env.API_URI}/platforms/${this.scope}/${this.id}`)
         .then(response => {
           this.loadingScreen = false
-          this.job = response.data.data
-          if (!this.job.setup.hasOwnProperty('parameters')) {
-            this.job.setup['parameters'] = []
-          } else {
-            this.parameters = this.job.setup.parameters
+          this.platform = response.data.data
+          if (!this.platform.hasOwnProperty('default_parameters')) {
+            this.platform['default_parameters'] = []
           }
         })
     },
@@ -340,16 +254,22 @@
         this.$validator.validateAll()
           .then((value) => {
             if (value) {
-              this.job.setup.parameters = this.parameters
+              if (this.scope === 'test' && !this.platform.has_browsers) {
+                this.platform.browsers = [this.platform.name]
+              }
+              this.platform.default_parameters = this.parameters
               axios
                 .put(
-                  process.env.API_URI + '/projects/' + this.projectId + '/jobs/' + this.type + '/' + this.id,
-                  this.job
+                  `${process.env.API_URI}/platforms/${this.scope}/${this.id}`,
+                  this.platform
                 )
                 .then(
                   () => {
-                    this.loadingSave = false
-                    this.$router.push('.')
+                    const self = this
+                    setTimeout(function () {
+                      self.loadingSave = false
+                      self.$router.push('./show')
+                    }, 2000)
                   }
                 )
             } else {

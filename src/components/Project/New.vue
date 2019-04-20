@@ -17,6 +17,7 @@
           lazy-validation
           v-model="valid"
           novalidate
+          @submit="submit"
         >
 
           <v-card>
@@ -50,11 +51,11 @@
               <div class="headline">Build Job</div>
 
               <v-checkbox
-                v-for="(platform, index) in configuration.available_build_platforms"
-                :key="index"
+                v-for="platform in configuration.build"
+                :key="platform.name"
                 v-model="build_jobs"
-                :label="platform"
-                :value="platform"
+                :label="platform.name"
+                :value="platform.name"
                 hide-details
               ></v-checkbox>
 
@@ -66,11 +67,11 @@
               <div class="headline">Test Job</div>
 
               <v-checkbox
-                v-for="(_, index) in configuration.available_test_platforms"
-                :key="index"
+                v-for="platform in configuration.test"
+                :key="platform.name"
                 v-model="test_jobs"
-                :label="index"
-                :value="index"
+                :label="platform.name"
+                :value="platform.name"
                 hide-details
               ></v-checkbox>
             </v-card-text>
@@ -110,8 +111,8 @@
       loadingScreen: false,
       loadingSave: false,
       configuration: {
-        available_build_platforms: [],
-        available_test_platforms: []
+        build: [],
+        test: []
       },
       build_jobs: [],
       test_jobs: [],
@@ -136,7 +137,7 @@
 
     mounted () {
       axios
-        .get('http://localhost:5000/jenkinsadmin/us-central1/api/global_configuration')
+        .get(process.env.API_URI + '/platforms')
         .then(
           (result) => {
             this.loadingScreen = false
@@ -146,7 +147,8 @@
     },
 
     methods: {
-      submit () {
+      submit (e) {
+        e.preventDefault()
         this.loadingSave = true
         this.$validator.validateAll()
           .then((value) => {
@@ -155,7 +157,7 @@
               this.project.test_jobs = this.test_jobs
               axios
                 .post(
-                  'http://localhost:5000/jenkinsadmin/us-central1/api/projects',
+                  process.env.API_URI + '/projects',
                   this.project
                 )
                 .then(

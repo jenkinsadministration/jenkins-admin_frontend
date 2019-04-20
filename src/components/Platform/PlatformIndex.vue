@@ -7,7 +7,7 @@
         <v-layout align-center row>
           <v-flex>
             <h3 class="display-3">
-              Plugins
+              Platform Configuration
             </h3>
           </v-flex>
         </v-layout>
@@ -18,10 +18,20 @@
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </v-layout>
 
+        <v-alert
+          :value="true"
+          color="info"
+          icon="info"
+          outline
+          v-if="!loadingScreen && configurations == null"
+        >
+          No platform found. Try creating a new one.
+        </v-alert>
+
         <v-layout
           v-if="!loadingScreen"
-          v-for="(item, index) in configurations"
-          :key="index"
+          v-for="(item, scope) in configurations"
+          :key="scope"
           row mt-3
         >
           <v-flex>
@@ -30,7 +40,7 @@
                 <v-icon>folder</v-icon>
 
                 <v-toolbar-title>
-                  {{item.name}}
+                  {{scope.toString().charAt(0).toUpperCase()}}{{scope.substring(1)}}
                 </v-toolbar-title>
 
                 <v-spacer></v-spacer>
@@ -51,8 +61,8 @@
 
                   <v-tooltip
                     top
-                    v-for="(menu_item, index) in items_menu"
-                    :key="index"
+                    v-for="(menu_item, i) in items_menu"
+                    :key="i"
                   >
                     <template v-slot:activator="{ on }">
                       <v-btn
@@ -61,7 +71,7 @@
                         small
                         :color="menu_item.color"
                         v-on="on"
-                        @click="do_action_menu_project(menu_item.action, item)"
+                        @click="do_action_menu(menu_item.action, scope)"
                       >
                         <v-icon>{{menu_item.icon}}</v-icon>
                       </v-btn>
@@ -73,18 +83,18 @@
               </v-toolbar>
 
               <v-list-tile
-                v-if="item.hasOwnProperty('platforms')"
-                v-for="(p, id) in item.platforms"
+                v-for="(p, id) in item"
                 :key="id"
                 style="cursor: pointer"
                 avatar
+                @click="$router.push('/platforms/' + scope + '/platforms/' + id + '/show')"
               >
                 <v-list-tile-avatar>
                   <v-icon>extension</v-icon>
                 </v-list-tile-avatar>
 
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ p.data.name }}</v-list-tile-title>
+                  <v-list-tile-title>{{ p.name }}</v-list-tile-title>
                 </v-list-tile-content>
 
                 <v-list-tile-action>
@@ -104,10 +114,15 @@
   </v-container>
 </template>
 <script>
+  import axios from 'axios'
+
   export default {
     data: function () {
       return {
-        loadingScreen: false,
+        loadingScreen: true,
+        loadingDelete: false,
+        platformToDelete: null,
+        platformNameToDelete: '',
         items_menu: [
           {
             title: 'Add Platform',
@@ -117,24 +132,54 @@
           }
         ],
         configurations: {
-          test: {
-            name: 'Test',
-            platforms: []
-          },
-          build: {
-            name: 'Build',
-            platforms: []
-          }
+          build: {},
+          test: {}
         }
       }
     },
 
-    computed: {},
+    mounted () {
+      this.initialize()
+    },
 
     watch: {},
 
     methods: {
       initialize () {
+        this.loadingScreen = true
+        axios
+          .get(process.env.API_URI + '/platforms')
+          .then(response => {
+            if (response.data != null) {
+              this.configurations = response.data
+            }
+            if (!this.configurations.hasOwnProperty('build')) {
+              this.configurations['build'] = {}
+            }
+            if (!this.configurations.hasOwnProperty('test')) {
+              this.configurations['test'] = {}
+            }
+            this.loadingScreen = false
+          })
+      },
+      do_action_menu (action, scope) {
+        switch (action) {
+          case 'add_platform':
+            this.add_platform(scope)
+            break
+          default:
+            console.error('Menu action no implemented')
+        }
+      },
+      add_platform (scope) {
+        switch (scope) {
+          case 'build':
+            this.$router.push('/platforms/build/platforms/new')
+            break
+          case 'test':
+            this.$router.push('/platforms/test/platforms/new')
+            break
+        }
       }
     }
   }
