@@ -1,4 +1,4 @@
-# Jenkins Management by Code - FronEnd
+# Jenkins Management by Code - FrontEnd
 
 > VueJs Application
 
