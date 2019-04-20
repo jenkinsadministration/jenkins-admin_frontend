@@ -232,6 +232,12 @@
       }
     }),
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.scope = this.$route.params.scope
       this.scopeName = this.scope.charAt(0).toUpperCase() + this.scope.substring(1)
@@ -251,7 +257,8 @@
               axios
                 .post(
                   process.env.API_URI + '/platforms/' + this.scope,
-                  this.platform
+                  this.platform,
+                  {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
                 )
                 .then(
                   () => {

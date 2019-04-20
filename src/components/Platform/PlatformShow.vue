@@ -127,11 +127,20 @@
       }
     }),
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.scope = this.$route.params.scope
       this.id = this.$route.params.id
       axios
-        .get(`${process.env.API_URI}/platforms/${this.scope}/${this.id}`)
+        .get(
+          `${process.env.API_URI}/platforms/${this.scope}/${this.id}`,
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
         .then(response => {
           this.loadingScreen = false
           this.platform = response.data.data
@@ -145,7 +154,10 @@
       confirm_delete () {
         this.loadingDelete = true
         axios
-          .delete(`${process.env.API_URI}/platforms/${this.scope}/${this.id}`)
+          .delete(
+            `${process.env.API_URI}/platforms/${this.scope}/${this.id}`,
+            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+          )
           .then(() => {
             this.loadingDelete = false
             this.dialogDelete = false

@@ -135,9 +135,18 @@
       }
     }),
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       axios
-        .get(process.env.API_URI + '/platforms')
+        .get(
+          process.env.API_URI + '/platforms',
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
         .then(
           (result) => {
             this.loadingScreen = false
@@ -158,7 +167,8 @@
               axios
                 .post(
                   process.env.API_URI + '/projects',
-                  this.project
+                  this.project,
+                  {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
                 )
                 .then(
                   () => {

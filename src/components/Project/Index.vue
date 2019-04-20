@@ -132,7 +132,8 @@
                 </v-list-tile-avatar>
 
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ job.platform }}{{ job.platform !== job.browser ? ' - ' + job.browser : '' }}</v-list-tile-title>
+                  <v-list-tile-title>{{ job.platform }}{{ job.platform !== job.browser ? ' - ' + job.browser : '' }}
+                  </v-list-tile-title>
                 </v-list-tile-content>
 
                 <v-list-tile-action>
@@ -218,6 +219,12 @@
       }
     },
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.load_projects()
     },
@@ -226,7 +233,10 @@
       load_projects () {
         this.loadingScreen = true
         axios
-          .get(process.env.API_URI + '/projects')
+          .get(
+            process.env.API_URI + '/projects',
+            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+          )
           .then(response => {
             this.projects = response.data
             this.loadingScreen = false
@@ -252,7 +262,10 @@
       confirm_delete () {
         this.loadingDelete = true
         axios
-          .delete(process.env.API_URI + '/projects/' + this.projectToDelete.id)
+          .delete(
+            process.env.API_URI + '/projects/' + this.projectToDelete.id,
+            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+          )
           .then(() => {
             this.loadingDelete = false
             this.dialogDelete = false

@@ -23,6 +23,8 @@ import PlatformNew from '../components/Platform/PlatformNew'
 import PlatformEdit from '../components/Platform/PlatformEdit'
 import PlatformShow from '../components/Platform/PlatformShow'
 
+import ConfigurationIndex from '../components/Configuration/Index'
+
 Vue.use(Router)
 
 export default new Router({
@@ -107,6 +109,12 @@ export default new Router({
       path: '/platforms/:scope/platforms/:id/show',
       name: 'PlatformShow',
       component: PlatformShow,
+      beforeEnter: AuthGuard
+    },
+    {
+      path: '/configuration',
+      name: 'ConfigurationIndex',
+      component: ConfigurationIndex,
       beforeEnter: AuthGuard
     }
   ],

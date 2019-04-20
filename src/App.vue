@@ -27,7 +27,7 @@
         <img src="/static/img/jenkins_logo.png" style="top: -14px; position: relative;">
       </v-toolbar-side-icon>
       <v-toolbar-title>
-        <router-link to="/" tag="span" style="cursor: pointer">Jenkins Administration</router-link>
+        <router-link to="/" tag="span" style="cursor: pointer">Jenkins Management by Code</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-only">
@@ -74,7 +74,7 @@
             {icon: 'work', title: 'Projects', link: '/projects'},
             {icon: 'widgets', title: 'Plugins', link: '/plugins'},
             {icon: 'devices', title: 'Platforms', link: '/platforms'},
-            {icon: 'settings', title: 'Configuration', link: '/configurations'},
+            {icon: 'settings', title: 'Configuration', link: '/configuration'},
             {icon: 'person', title: 'Profile', link: '/profile'}
           ]
         }

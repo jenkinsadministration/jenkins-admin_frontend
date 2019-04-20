@@ -138,6 +138,12 @@
       }
     },
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.initialize()
     },
@@ -148,7 +154,10 @@
       initialize () {
         this.loadingScreen = true
         axios
-          .get(process.env.API_URI + '/platforms')
+          .get(
+            process.env.API_URI + '/platforms',
+            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+          )
           .then(response => {
             if (response.data != null) {
               this.configurations = response.data

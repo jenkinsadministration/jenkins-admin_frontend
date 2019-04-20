@@ -134,17 +134,29 @@
       }
     }),
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.id = this.$route.params.id
       axios
-        .get(process.env.API_URI + '/projects/' + this.id)
+        .get(
+          process.env.API_URI + '/projects/' + this.id,
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
         .then(response => {
           this.project = response.data.data
 
           this.build_jobs = this.project.hasOwnProperty('build_jobs') ? this.project.build_jobs : []
           this.test_jobs = this.project.hasOwnProperty('test_jobs') ? this.project.test_jobs : []
           axios
-            .get(process.env.API_URI + '/platforms')
+            .get(
+              process.env.API_URI + '/platforms',
+              {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+            )
             .then(
               (result) => {
                 this.loadingScreen = false
@@ -166,7 +178,8 @@
               axios
                 .put(
                   process.env.API_URI + '/projects/' + this.id,
-                  this.project
+                  this.project,
+                  {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
                 )
                 .then(
                   () => {

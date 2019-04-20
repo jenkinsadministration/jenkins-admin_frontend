@@ -12,7 +12,7 @@
                 src="/static/img/jenkins_blogbanner.gif"
               ></v-img>
 
-              <h3 class="display-3">Jenkins Administration Site</h3>
+              <h3 class="display-3">Jenkins Management by Code</h3>
 
               <span class="subheading">
                 Here you save your jenkins setup, to recover your jenkins whenever you want, or simpling creating new job without too much effort.

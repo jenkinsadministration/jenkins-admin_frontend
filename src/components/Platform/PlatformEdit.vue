@@ -232,12 +232,21 @@
       }
     }),
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.scope = this.$route.params.scope
       this.scopeName = this.scope.charAt(0).toUpperCase() + this.scope.substring(1)
       this.id = this.$route.params.id
       axios
-        .get(`${process.env.API_URI}/platforms/${this.scope}/${this.id}`)
+        .get(
+          `${process.env.API_URI}/platforms/${this.scope}/${this.id}`,
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
         .then(response => {
           this.loadingScreen = false
           this.platform = response.data.data
@@ -261,7 +270,8 @@
               axios
                 .put(
                   `${process.env.API_URI}/platforms/${this.scope}/${this.id}`,
-                  this.platform
+                  this.platform,
+                  {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
                 )
                 .then(
                   () => {

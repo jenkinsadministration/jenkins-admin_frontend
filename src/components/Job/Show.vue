@@ -149,12 +149,21 @@
       }
     }),
 
+    computed: {
+      user () {
+        return this.$store.getters.user
+      }
+    },
+
     mounted () {
       this.projectId = this.$route.params.projectId
       this.id = this.$route.params.id
       this.type = this.$route.params.type
       axios
-        .get(process.env.API_URI + '/projects/' + this.projectId + '/jobs/' + this.type + '/' + this.id)
+        .get(
+          process.env.API_URI + '/projects/' + this.projectId + '/jobs/' + this.type + '/' + this.id,
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
         .then(response => {
           this.loadingScreen = false
           this.job = response.data.data

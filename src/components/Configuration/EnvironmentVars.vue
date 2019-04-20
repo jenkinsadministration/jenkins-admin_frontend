@@ -196,9 +196,6 @@
     computed: {
       formTitle () {
         return this.editedIndex === -1 ? 'New Plugin' : 'Edit Plugin'
-      },
-      user () {
-        return this.$store.getters.user
       }
     },
 
@@ -214,10 +211,7 @@
 
     methods: {
       initialize () {
-        axios.get(
-          process.env.API_URI + '/plugins',
-          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
-        )
+        axios.get(process.env.API_URI + '/plugins')
           .then(plugins => {
             this.plugins = plugins.data
             this.loadingScreen = false
@@ -242,9 +236,7 @@
         this.loadingDelete = true
         axios
           .delete(
-            process.env.API_URI + '/plugins/' + this.selectedId,
-            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
-          )
+            process.env.API_URI + '/plugins/' + this.selectedId)
           .then(
             () => {
               self.loadingDelete = false
@@ -268,8 +260,7 @@
           axios
             .put(
               process.env.API_URI + '/plugins/' + this.selectedId,
-              this.editedItem,
-              {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+              this.editedItem
             )
             .then(
               (plugin) => {
@@ -283,8 +274,7 @@
           axios
             .post(
               process.env.API_URI + '/plugins',
-              this.editedItem,
-              {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+              this.editedItem
             )
             .then(
               (plugin) => {
