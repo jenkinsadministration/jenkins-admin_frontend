@@ -15,13 +15,13 @@
     </v-layout>
     <v-layout align-center justify-center row fill-height class="text-xs-center">
       <v-flex xs4 ma-2>
-        <v-btn large block color="primary">Credentials</v-btn>
+        <v-btn large block color="primary" :to="'/configuration/credentials'">Credentials</v-btn>
       </v-flex>
       <v-flex xs4 ma-2>
-        <v-btn large block color="primary">Environment Variables</v-btn>
+        <v-btn large block color="primary" :to="'/configuration/environment_vars'">Environment Variables</v-btn>
       </v-flex>
       <v-flex xs4 ma-2>
-        <v-btn large block color="primary">Tool Configuration</v-btn>
+        <v-btn large block color="primary" :to="'/configuration/tool_configurations'">Tool Configuration</v-btn>
       </v-flex>
     </v-layout>
   </v-container>

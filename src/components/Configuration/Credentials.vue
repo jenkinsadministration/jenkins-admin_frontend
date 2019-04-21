@@ -7,7 +7,7 @@
         <v-layout align-center row>
           <v-flex>
             <h3 class="display-3">
-              Plugins
+              Credentials
               <v-dialog v-model="dialog" persistent max-width="500px">
                 <template v-slot:activator="{ on }">
 
@@ -27,7 +27,29 @@
                   </v-card-title>
 
                   <v-card-text class="white">
-                    <v-text-field v-model="editedItem.name" label="Name"></v-text-field>
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Name"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('name')"
+                      data-vv-name="name"
+                      required
+                      :success="errors.collect('name').length < 1"
+                    >
+                    </v-text-field>
+                  </v-card-text>
+
+                  <v-card-text class="white">
+                    <v-text-field
+                      v-model="editedItem.kind"
+                      label="Kind"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('kind')"
+                      data-vv-name="kind"
+                      required
+                      :success="errors.collect('kind').length < 1"
+                    >
+                    </v-text-field>
                   </v-card-text>
 
                   <v-card-actions class="grey lighten-4" v-if="!loadingSave">
@@ -52,11 +74,11 @@
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </v-layout>
 
-        <v-alert :value="true" color="info" icon="info" outline v-if="!loadingScreen && plugins.length === 0">
-          No plugins found. Try creating a new one.
+        <v-alert :value="true" color="info" icon="info" outline v-if="!loadingScreen && credentials.length === 0">
+          No credentials found. Try creating a new one.
         </v-alert>
 
-        <v-layout row mt-3 v-if="!loadingScreen && plugins.length > 0">
+        <v-layout row mt-3 v-if="!loadingScreen && credentials.length > 0">
           <v-flex>
             <div>
 
@@ -74,13 +96,14 @@
 
                 <v-data-table
                   :headers="headers"
-                  :items="plugins"
+                  :items="credentials"
                   :search="search"
                   class="container"
                   :rows-per-page-items="[50]"
                 >
                   <template v-slot:items="props">
                     <td>{{ props.item.data.name }}</td>
+                    <td>{{ props.item.data.kind }}</td>
                     <td class="justify-center layout px-0">
                       <v-btn
                         icon
@@ -107,7 +130,7 @@
                   </template>
                   <template v-slot:no-data>
                     <v-alert :value="true" color="info" icon="info" outline>
-                      No plugins found. Try creating a new one.
+                      No credentials found. Try creating a new one.
                     </v-alert>
                   </template>
                 </v-data-table>
@@ -115,6 +138,10 @@
             </div>
           </v-flex>
         </v-layout>
+
+        <v-divider class="mt-4 mb-3"></v-divider>
+
+        <v-btn to="/configuration">Back</v-btn>
 
       </v-flex>
     </v-layout>
@@ -125,7 +152,7 @@
         </v-card-title>
 
         <v-card-text class="text-xs-center">
-          Are you sure that you want to delete the plugin «{{editedItem.name}}»?
+          Are you sure that you want to delete the credential «{{editedItem.name}}»?
         </v-card-text>
 
         <v-divider></v-divider>
@@ -174,6 +201,11 @@
             value: 'name'
           },
           {
+            text: 'Kind',
+            align: 'left',
+            value: 'kind'
+          },
+          {
             text: 'Actions',
             value: 'data.name',
             align: 'center',
@@ -181,21 +213,26 @@
             sortable: false
           }
         ],
-        plugins: [],
+        credentials: [],
         selectedId: '',
         editedIndex: -1,
         editedItem: {
-          name: ''
+          name: '',
+          kind: ''
         },
         defaultItem: {
-          name: ''
+          name: '',
+          kind: ''
         }
       }
     },
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Plugin' : 'Edit Plugin'
+        return this.editedIndex === -1 ? 'New Credential' : 'Edit Credential'
+      },
+      user () {
+        return this.$store.getters.user
       }
     },
 
@@ -211,15 +248,18 @@
 
     methods: {
       initialize () {
-        axios.get(process.env.API_URI + '/plugins')
-          .then(plugins => {
-            this.plugins = plugins.data
+        axios.get(
+          process.env.API_URI + '/credentials',
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
+          .then(credentials => {
+            this.credentials = credentials.data
             this.loadingScreen = false
           })
       },
 
       editItem (item) {
-        this.editedIndex = this.plugins.indexOf(item)
+        this.editedIndex = this.credentials.indexOf(item)
         this.editedItem = Object.assign({}, item.data)
         this.selectedId = item.id
         this.dialog = true
@@ -227,7 +267,7 @@
 
       deleteItem (item) {
         this.editedItem = Object.assign({}, item.data)
-        this.editedIndex = this.plugins.indexOf(item)
+        this.editedIndex = this.credentials.indexOf(item)
         this.selectedId = item.id
         this.dialogDelete = true
       },
@@ -236,12 +276,14 @@
         this.loadingDelete = true
         axios
           .delete(
-            process.env.API_URI + '/plugins/' + this.selectedId)
+            process.env.API_URI + '/credentials/' + this.selectedId,
+            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+          )
           .then(
             () => {
               self.loadingDelete = false
               this.dialogDelete = false
-              this.plugins.splice(this.editedIndex, 1)
+              this.credentials.splice(this.editedIndex, 1)
             }
           )
       },
@@ -254,36 +296,43 @@
         }, 300)
       },
 
-      save () {
-        this.loadingSave = true
-        if (this.editedIndex > -1) {
-          axios
-            .put(
-              process.env.API_URI + '/plugins/' + this.selectedId,
-              this.editedItem
-            )
-            .then(
-              (plugin) => {
-                this.plugins[this.editedIndex].data = plugin.data.data
-                this.loadingSave = false
-                this.close()
+      save (e) {
+        e.preventDefault()
+        this.$validator.validateAll()
+          .then((value) => {
+            if (value) {
+              this.loadingSave = true
+              if (this.editedIndex > -1) {
+                axios
+                  .put(
+                    process.env.API_URI + '/credentials/' + this.selectedId,
+                    this.editedItem,
+                    {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+                  )
+                  .then(
+                    (credential) => {
+                      this.credentials[this.editedIndex].data = credential.data.data
+                      this.loadingSave = false
+                      this.close()
+                    }
+                  )
+              } else {
+                axios
+                  .post(
+                    process.env.API_URI + '/credentials',
+                    this.editedItem,
+                    {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+                  )
+                  .then(
+                    (credential) => {
+                      this.credentials.push(credential.data)
+                      this.loadingSave = false
+                      this.close()
+                    }
+                  )
               }
-            )
-        } else {
-          console.log(this.editedItem)
-          axios
-            .post(
-              process.env.API_URI + '/plugins',
-              this.editedItem
-            )
-            .then(
-              (plugin) => {
-                this.plugins.push(plugin.data)
-                this.loadingSave = false
-                this.close()
-              }
-            )
-        }
+            }
+          })
       }
     }
   }

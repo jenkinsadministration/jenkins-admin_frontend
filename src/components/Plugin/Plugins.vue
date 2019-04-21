@@ -27,7 +27,16 @@
                   </v-card-title>
 
                   <v-card-text class="white">
-                    <v-text-field v-model="editedItem.name" label="Name"></v-text-field>
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Name"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('name')"
+                      data-vv-name="name"
+                      required
+                      :success="errors.collect('name').length < 1"
+                    >
+                    </v-text-field>
                   </v-card-text>
 
                   <v-card-actions class="grey lighten-4" v-if="!loadingSave">
@@ -263,37 +272,41 @@
       },
 
       save () {
-        this.loadingSave = true
-        if (this.editedIndex > -1) {
-          axios
-            .put(
-              process.env.API_URI + '/plugins/' + this.selectedId,
-              this.editedItem,
-              {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
-            )
-            .then(
-              (plugin) => {
-                this.plugins[this.editedIndex].data = plugin.data.data
-                this.loadingSave = false
-                this.close()
+        this.$validator.validateAll()
+          .then((value) => {
+            if (value) {
+              this.loadingSave = true
+              if (this.editedIndex > -1) {
+                axios
+                  .put(
+                    process.env.API_URI + '/plugins/' + this.selectedId,
+                    this.editedItem,
+                    {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+                  )
+                  .then(
+                    (plugin) => {
+                      this.plugins[this.editedIndex].data = plugin.data.data
+                      this.loadingSave = false
+                      this.close()
+                    }
+                  )
+              } else {
+                axios
+                  .post(
+                    process.env.API_URI + '/plugins',
+                    this.editedItem,
+                    {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+                  )
+                  .then(
+                    (plugin) => {
+                      this.plugins.push(plugin.data)
+                      this.loadingSave = false
+                      this.close()
+                    }
+                  )
               }
-            )
-        } else {
-          console.log(this.editedItem)
-          axios
-            .post(
-              process.env.API_URI + '/plugins',
-              this.editedItem,
-              {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
-            )
-            .then(
-              (plugin) => {
-                this.plugins.push(plugin.data)
-                this.loadingSave = false
-                this.close()
-              }
-            )
-        }
+            }
+          })
       }
     }
   }

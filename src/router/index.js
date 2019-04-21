@@ -24,6 +24,9 @@ import PlatformEdit from '../components/Platform/PlatformEdit'
 import PlatformShow from '../components/Platform/PlatformShow'
 
 import ConfigurationIndex from '../components/Configuration/Index'
+import ConfigurationEnvironmentVars from '../components/Configuration/EnvironmentVars'
+import ConfigurationCredentials from '../components/Configuration/Credentials'
+import ConfigurationToolConfiguration from '../components/Configuration/ToolConfiguration'
 
 Vue.use(Router)
 
@@ -32,8 +35,7 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Home,
-      beforeEnter: AuthGuard
+      component: Home
     },
     {
       path: '/profile',
@@ -54,68 +56,72 @@ export default new Router({
     {
       path: '/projects',
       name: 'ProjectIndex',
-      component: ProjectIndex,
-      beforeEnter: AuthGuard
+      component: ProjectIndex
     },
     {
       path: '/projects/:id/edit',
       name: 'ProjectEdit',
-      component: ProjectEdit,
-      beforeEnter: AuthGuard
+      component: ProjectEdit
     },
     {
       path: '/projects/new',
       name: 'ProjectNew',
-      component: ProjectNew,
-      beforeEnter: AuthGuard
+      component: ProjectNew
     },
     {
       path: '/projects/:projectId/jobs/:type/:id',
       name: 'JobShow',
-      component: JobShow,
-      beforeEnter: AuthGuard
+      component: JobShow
     },
     {
       path: '/projects/:projectId/jobs/:type/:id/edit',
       name: 'JobEdit',
-      component: JobEdit,
-      beforeEnter: AuthGuard
+      component: JobEdit
     },
     {
       path: '/plugins',
       name: 'PluginsIndex',
-      component: PluginsIndex,
-      beforeEnter: AuthGuard
+      component: PluginsIndex
     },
     {
       path: '/platforms',
       name: 'PlatformIndex',
-      component: PlatformIndex,
-      beforeEnter: AuthGuard
+      component: PlatformIndex
     },
     {
       path: '/platforms/:scope/platforms/new',
       name: 'PlatformNew',
-      component: PlatformNew,
-      beforeEnter: AuthGuard
+      component: PlatformNew
     },
     {
       path: '/platforms/:scope/platforms/:id/edit',
       name: 'PlatformEdit',
-      component: PlatformEdit,
-      beforeEnter: AuthGuard
+      component: PlatformEdit
     },
     {
       path: '/platforms/:scope/platforms/:id/show',
       name: 'PlatformShow',
-      component: PlatformShow,
-      beforeEnter: AuthGuard
+      component: PlatformShow
     },
     {
       path: '/configuration',
       name: 'ConfigurationIndex',
-      component: ConfigurationIndex,
-      beforeEnter: AuthGuard
+      component: ConfigurationIndex
+    },
+    {
+      path: '/configuration/environment_vars',
+      name: 'ConfigurationEnvironmentVars',
+      component: ConfigurationEnvironmentVars
+    },
+    {
+      path: '/configuration/credentials',
+      name: 'ConfigurationCredentials',
+      component: ConfigurationCredentials
+    },
+    {
+      path: '/configuration/tool_configurations',
+      name: 'ConfigurationToolConfiguration',
+      component: ConfigurationToolConfiguration
     }
   ],
   mode: 'history'

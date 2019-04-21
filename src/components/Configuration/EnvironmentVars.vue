@@ -7,7 +7,7 @@
         <v-layout align-center row>
           <v-flex>
             <h3 class="display-3">
-              Plugins
+              Environment Variables
               <v-dialog v-model="dialog" persistent max-width="500px">
                 <template v-slot:activator="{ on }">
 
@@ -27,7 +27,16 @@
                   </v-card-title>
 
                   <v-card-text class="white">
-                    <v-text-field v-model="editedItem.name" label="Name"></v-text-field>
+                    <v-text-field
+                      v-model="editedItem.name"
+                      label="Name"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('name')"
+                      data-vv-name="name"
+                      required
+                      :success="errors.collect('name').length < 1"
+                    >
+                    </v-text-field>
                   </v-card-text>
 
                   <v-card-actions class="grey lighten-4" v-if="!loadingSave">
@@ -52,11 +61,11 @@
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </v-layout>
 
-        <v-alert :value="true" color="info" icon="info" outline v-if="!loadingScreen && plugins.length === 0">
-          No plugins found. Try creating a new one.
+        <v-alert :value="true" color="info" icon="info" outline v-if="!loadingScreen && environmentVars.length === 0">
+          No environment variables found. Try creating a new one.
         </v-alert>
 
-        <v-layout row mt-3 v-if="!loadingScreen && plugins.length > 0">
+        <v-layout row mt-3 v-if="!loadingScreen && environmentVars.length > 0">
           <v-flex>
             <div>
 
@@ -74,7 +83,7 @@
 
                 <v-data-table
                   :headers="headers"
-                  :items="plugins"
+                  :items="environmentVars"
                   :search="search"
                   class="container"
                   :rows-per-page-items="[50]"
@@ -107,7 +116,7 @@
                   </template>
                   <template v-slot:no-data>
                     <v-alert :value="true" color="info" icon="info" outline>
-                      No plugins found. Try creating a new one.
+                      No environment variables found. Try creating a new one.
                     </v-alert>
                   </template>
                 </v-data-table>
@@ -115,6 +124,10 @@
             </div>
           </v-flex>
         </v-layout>
+
+        <v-divider class="mt-4 mb-3"></v-divider>
+
+        <v-btn to="/configuration">Back</v-btn>
 
       </v-flex>
     </v-layout>
@@ -125,7 +138,7 @@
         </v-card-title>
 
         <v-card-text class="text-xs-center">
-          Are you sure that you want to delete the plugin «{{editedItem.name}}»?
+          Are you sure that you want to delete the environment variable «{{editedItem.name}}»?
         </v-card-text>
 
         <v-divider></v-divider>
@@ -181,7 +194,7 @@
             sortable: false
           }
         ],
-        plugins: [],
+        environmentVars: [],
         selectedId: '',
         editedIndex: -1,
         editedItem: {
@@ -195,7 +208,10 @@
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Plugin' : 'Edit Plugin'
+        return this.editedIndex === -1 ? 'New Environment Variable' : 'Edit Environment Variable'
+      },
+      user () {
+        return this.$store.getters.user
       }
     },
 
@@ -211,15 +227,18 @@
 
     methods: {
       initialize () {
-        axios.get(process.env.API_URI + '/plugins')
-          .then(plugins => {
-            this.plugins = plugins.data
+        axios.get(
+          process.env.API_URI + '/environment_vars',
+          {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+        )
+          .then(environmentVars => {
+            this.environmentVars = environmentVars.data
             this.loadingScreen = false
           })
       },
 
       editItem (item) {
-        this.editedIndex = this.plugins.indexOf(item)
+        this.editedIndex = this.environmentVars.indexOf(item)
         this.editedItem = Object.assign({}, item.data)
         this.selectedId = item.id
         this.dialog = true
@@ -227,7 +246,7 @@
 
       deleteItem (item) {
         this.editedItem = Object.assign({}, item.data)
-        this.editedIndex = this.plugins.indexOf(item)
+        this.editedIndex = this.environmentVars.indexOf(item)
         this.selectedId = item.id
         this.dialogDelete = true
       },
@@ -236,12 +255,14 @@
         this.loadingDelete = true
         axios
           .delete(
-            process.env.API_URI + '/plugins/' + this.selectedId)
+            process.env.API_URI + '/environment_vars/' + this.selectedId,
+            {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+          )
           .then(
             () => {
               self.loadingDelete = false
               this.dialogDelete = false
-              this.plugins.splice(this.editedIndex, 1)
+              this.environmentVars.splice(this.editedIndex, 1)
             }
           )
       },
@@ -255,35 +276,41 @@
       },
 
       save () {
-        this.loadingSave = true
-        if (this.editedIndex > -1) {
-          axios
-            .put(
-              process.env.API_URI + '/plugins/' + this.selectedId,
-              this.editedItem
-            )
-            .then(
-              (plugin) => {
-                this.plugins[this.editedIndex].data = plugin.data.data
-                this.loadingSave = false
-                this.close()
+        this.$validator.validateAll()
+          .then((value) => {
+            if (value) {
+              this.loadingSave = true
+              if (this.editedIndex > -1) {
+                axios
+                  .put(
+                    process.env.API_URI + '/environment_vars/' + this.selectedId,
+                    this.editedItem,
+                    {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+                  )
+                  .then(
+                    (environmentVar) => {
+                      this.environmentVars[this.editedIndex].data = environmentVar.data.data
+                      this.loadingSave = false
+                      this.close()
+                    }
+                  )
+              } else {
+                axios
+                  .post(
+                    process.env.API_URI + '/environment_vars',
+                    this.editedItem,
+                    {headers: {'Authorization': 'Bearer ' + this.user.authToken}}
+                  )
+                  .then(
+                    (environmentVar) => {
+                      this.environmentVars.push(environmentVar.data)
+                      this.loadingSave = false
+                      this.close()
+                    }
+                  )
               }
-            )
-        } else {
-          console.log(this.editedItem)
-          axios
-            .post(
-              process.env.API_URI + '/plugins',
-              this.editedItem
-            )
-            .then(
-              (plugin) => {
-                this.plugins.push(plugin.data)
-                this.loadingSave = false
-                this.close()
-              }
-            )
-        }
+            }
+          })
       }
     }
   }
