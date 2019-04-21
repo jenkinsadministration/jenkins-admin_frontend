@@ -35,7 +35,8 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Home
+      component: Home,
+      beforeEnter: AuthGuard
     },
     {
       path: '/profile',
@@ -56,72 +57,86 @@ export default new Router({
     {
       path: '/projects',
       name: 'ProjectIndex',
-      component: ProjectIndex
+      component: ProjectIndex,
+      beforeEnter: AuthGuard
     },
     {
       path: '/projects/:id/edit',
       name: 'ProjectEdit',
-      component: ProjectEdit
+      component: ProjectEdit,
+      beforeEnter: AuthGuard
     },
     {
       path: '/projects/new',
       name: 'ProjectNew',
-      component: ProjectNew
+      component: ProjectNew,
+      beforeEnter: AuthGuard
     },
     {
       path: '/projects/:projectId/jobs/:type/:id',
       name: 'JobShow',
-      component: JobShow
+      component: JobShow,
+      beforeEnter: AuthGuard
     },
     {
       path: '/projects/:projectId/jobs/:type/:id/edit',
       name: 'JobEdit',
-      component: JobEdit
+      component: JobEdit,
+      beforeEnter: AuthGuard
     },
     {
       path: '/plugins',
       name: 'PluginsIndex',
-      component: PluginsIndex
+      component: PluginsIndex,
+      beforeEnter: AuthGuard
     },
     {
       path: '/platforms',
       name: 'PlatformIndex',
-      component: PlatformIndex
+      component: PlatformIndex,
+      beforeEnter: AuthGuard
     },
     {
       path: '/platforms/:scope/platforms/new',
       name: 'PlatformNew',
-      component: PlatformNew
+      component: PlatformNew,
+      beforeEnter: AuthGuard
     },
     {
       path: '/platforms/:scope/platforms/:id/edit',
       name: 'PlatformEdit',
-      component: PlatformEdit
+      component: PlatformEdit,
+      beforeEnter: AuthGuard
     },
     {
       path: '/platforms/:scope/platforms/:id/show',
       name: 'PlatformShow',
-      component: PlatformShow
+      component: PlatformShow,
+      beforeEnter: AuthGuard
     },
     {
       path: '/configuration',
       name: 'ConfigurationIndex',
-      component: ConfigurationIndex
+      component: ConfigurationIndex,
+      beforeEnter: AuthGuard
     },
     {
       path: '/configuration/environment_vars',
       name: 'ConfigurationEnvironmentVars',
-      component: ConfigurationEnvironmentVars
+      component: ConfigurationEnvironmentVars,
+      beforeEnter: AuthGuard
     },
     {
       path: '/configuration/credentials',
       name: 'ConfigurationCredentials',
-      component: ConfigurationCredentials
+      component: ConfigurationCredentials,
+      beforeEnter: AuthGuard
     },
     {
       path: '/configuration/tool_configurations',
       name: 'ConfigurationToolConfiguration',
-      component: ConfigurationToolConfiguration
+      component: ConfigurationToolConfiguration,
+      beforeEnter: AuthGuard
     }
   ],
   mode: 'history'
