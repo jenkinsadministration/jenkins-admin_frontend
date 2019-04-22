@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <v-navigation-drawer fixed temporary v-model="sideNav" v-if="this.$route.name !== 'Signin'">
+  <v-app :class="userIsAuthenticated ? '' : 'primary'">
+    <v-navigation-drawer fixed temporary v-model="sideNav" v-if="userIsAuthenticated">
       <v-list>
         <v-list-tile
           v-for="item in menuItems"
@@ -21,7 +21,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar fixed dark class="primary" v-if="this.$route.name !== 'Signin'">
+    <v-toolbar fixed dark class="primary" v-if="userIsAuthenticated">
       <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up "></v-toolbar-side-icon>
       <v-toolbar-side-icon class="hidden-xs-only">
         <img src="/static/img/jenkins_logo.png" style="top: -14px; position: relative;">
@@ -50,9 +50,35 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <main style="height: 100%">
+    <main style="height: calc(100% - 50px)">
       <router-view></router-view>
     </main>
+    <v-footer
+      dark
+      fixed
+      height="auto"
+      v-if="userIsAuthenticated"
+    >
+      <v-card
+        class="flex"
+        style="border-radius: 0"
+        flat
+        tile
+      >
+
+        <v-card-actions class="grey darken-3 justify-center">
+          &copy;2019 - <strong> Jenkins Management by Code</strong>
+          <v-spacer></v-spacer>
+          Powered by
+          <v-img
+            slot="offset"
+            class="mx-auto d-inline ml-3"
+            style="max-width: 100px; max-height: 28px"
+            src="/static/img/logo-pedidosya-white.svg"
+          ></v-img>
+        </v-card-actions>
+      </v-card>
+    </v-footer>
   </v-app>
 </template>
 
@@ -87,7 +113,7 @@
     methods: {
       onLogout () {
         this.$store.dispatch('logout')
-        this.$router.push('/')
+        this.$router.push('/signin')
       }
     }
   }

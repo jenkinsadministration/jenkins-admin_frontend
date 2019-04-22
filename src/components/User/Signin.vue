@@ -1,5 +1,14 @@
 <template>
   <v-container>
+
+    <v-img
+      slot="offset"
+      style="position: absolute; top: 0; left: 0;"
+      class="mx-auto d-block"
+      width="100%"
+      src="/static/img/login-top.svg"
+    ></v-img>
+
     <v-layout row v-if="error">
       <v-flex xs12 sm6 offset-sm3>
         <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
@@ -7,7 +16,7 @@
     </v-layout>
     <v-layout row>
       <v-flex xs12 sm10 offset-sm1>
-        <v-card class="mx-auto" style="max-width: 500px;">
+        <v-card class="mx-auto elevation-10" style="max-width: 500px;">
           <v-card-text>
             <v-container>
               <v-layout row>
@@ -22,7 +31,7 @@
                     <v-img
                       slot="offset"
                       class="mx-auto d-block"
-                      width="300px"
+                      style="max-width: 300px;"
                       src="/static/img/jenkins_color.png"
                     ></v-img>
 
@@ -31,10 +40,17 @@
                            @click.prevent="onSigninGoogle"
                     >Login with Google
                       <v-icon right dark>lock_open</v-icon>
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                       </span>
                     </v-btn>
+
+                    <v-divider class="mt-4"></v-divider>
+
+                    <v-img
+                      slot="offset"
+                      class="mx-auto d-block mt-4"
+                      style="max-width: 150px;"
+                      src="/static/img/logo-pedidosya-red.svg"
+                    ></v-img>
+
                   </div>
 
                 </v-flex>
@@ -44,6 +60,15 @@
         </v-card>
       </v-flex>
     </v-layout>
+
+    <v-img
+      slot="offset"
+      style="position: absolute; bottom: 0; left: 0;"
+      class="mx-auto d-block"
+      width="100%"
+      src="/static/img/login-bottom.svg"
+    ></v-img>
+
   </v-container>
 </template>
 
