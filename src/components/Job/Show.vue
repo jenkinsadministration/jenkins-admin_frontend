@@ -60,6 +60,19 @@
           </v-card-text>
         </v-card>
 
+        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('athenea_project')">
+          <v-card-text>
+            <div class="headline mb-3">Athenea</div>
+
+            <v-label>Project Id</v-label>
+            <p>{{job.setup.athenea_project.project_id}}</p>
+
+            <v-label>Environment Id</v-label>
+            <p>{{job.setup.athenea_project.environment_id}}</p>
+
+          </v-card-text>
+        </v-card>
+
         <v-card class="mt-4" v-if="job.setup.parameters.length > 0">
           <v-card-text>
             <div class="headline mb-3">Parameters</div>
@@ -134,6 +147,10 @@
             poll_scm: ''
           },
           template: '',
+          athenea_project: {
+            environment_id: '',
+            project_id: ''
+          },
           parameters: [
             {
               name: '',

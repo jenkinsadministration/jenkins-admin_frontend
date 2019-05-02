@@ -123,6 +123,31 @@
 
           <v-card class="mt-4">
             <v-card-text>
+              <div class="headline mb-3">Athenea</div>
+
+              <v-text-field
+                v-model="job.setup.athenea_project.project_id"
+                :error-messages="errors.collect('athenea_project_project_id')"
+                label="Project Id"
+                data-vv-name="Project Id"
+                required
+                :success="errors.collect('athenea_project_project_id').length < 1"
+              ></v-text-field>
+
+              <v-text-field
+                v-model="job.setup.athenea_project.environment_id"
+                :error-messages="errors.collect('athenea_project_environment_id')"
+                label="Environment_Id"
+                data-vv-name="Environment Id"
+                required
+                :success="errors.collect('athenea_project_environment_id').length < 1"
+              ></v-text-field>
+
+            </v-card-text>
+          </v-card>
+
+          <v-card class="mt-4">
+            <v-card-text>
               <div class="headline mb-3">Parameters</div>
               <v-card
                 v-for="(param, index) in parameters"
@@ -282,6 +307,10 @@
             poll_scm: ''
           },
           template: '',
+          athenea_project: {
+            environment_id: '',
+            project_id: ''
+          },
           parameters: [
             {
               name: '',
@@ -338,6 +367,12 @@
             this.job.setup['parameters'] = []
           } else {
             this.parameters = this.job.setup.parameters
+          }
+          if (!this.job.setup.hasOwnProperty('athenea_project')) {
+            this.job.setup['athenea_project'] = {
+              environment_id: '',
+              project_id: ''
+            }
           }
         })
     },
