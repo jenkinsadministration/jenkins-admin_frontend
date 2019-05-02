@@ -77,6 +77,19 @@
             </v-card-text>
           </v-card>
 
+          <v-card class="mt-4">
+            <v-card-text>
+              <div class="headline mb-3">Athenea Project</div>
+
+              <v-checkbox
+                v-model="project.create_athenea_project"
+                label="Create Athenea Project"
+                hide-details
+              ></v-checkbox>
+
+            </v-card-text>
+          </v-card>
+
           <v-divider class="mt-4 mb-3"></v-divider>
 
           <v-btn to="/projects">Back</v-btn>
@@ -120,6 +133,7 @@
       project: {
         name: '',
         path: '',
+        create_athenea_project: false,
         build_jobs: [],
         test_jobs: []
       },

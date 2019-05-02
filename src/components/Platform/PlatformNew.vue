@@ -296,7 +296,7 @@
                 maven_key: '',
                 is_parameterizable: true,
                 is_maven_param: true,
-                default_value: '',
+                default_value: false,
                 type: 'boolean',
                 description: ''
               }

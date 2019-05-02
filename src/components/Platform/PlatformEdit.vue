@@ -62,89 +62,114 @@
 
           <v-card class="mt-4">
             <v-card-text>
+
               <div class="headline mb-3">Default Parameters</div>
-              <v-card
-                v-for="(param, index) in parameters"
-                :key="index"
-                flat elevation="0" style="border: solid 1px #e6e6e6;" class="mt-3"
-              >
-                <v-card-text>
-                  <v-text-field
-                    v-model="param.name"
-                    v-validate="'required'"
-                    :error-messages="errors.collect('name')"
-                    label="Name"
-                    data-vv-name="name"
-                    required
-                    :success="errors.collect('name').length < 1"
-                  ></v-text-field>
 
-                  <v-checkbox
-                    v-if="param.type === 'boolean'"
-                    v-model="param.default_value"
-                    label="Default Value"
-                    hide-details
-                  ></v-checkbox>
-
-                  <v-text-field
-                    v-if="param.type === 'string'"
-                    v-model="param.default_value"
-                    label="Default Value"
-                    :success="errors.collect('default_value').length < 1"
-                  ></v-text-field>
-
-                  <v-combobox
-                    v-if="param.type === 'choice'"
-                    v-model="param.values"
-                    :items="param.values"
-                    v-validate="'required'"
-                    :error-messages="errors.collect('values')"
-                    label="Values"
-                    data-vv-name="values"
-                    multiple
-                    chips
-                    :success="param.values.length > 0"
-                  ></v-combobox>
-
-                  <v-checkbox
-                    v-model="param.is_maven_param"
-                    label="Is Maven Param"
-                    hide-details
-                  ></v-checkbox>
-
-                  <v-text-field
-                    v-if="param.is_maven_param"
-                    v-model="param.maven_key"
-                    v-validate="'required'"
-                    :error-messages="errors.collect('maven_key')"
-                    label="Maven Name"
-                    data-vv-name="maven_key"
-                    required
-                    :success="errors.collect('maven_key').length < 1"
-                  ></v-text-field>
-
-                  <v-checkbox
-                    v-model="param.is_parameterizable"
-                    label="Render a Job Parameter"
-                    hide-details
-                  ></v-checkbox>
-                  <v-textarea
-                    label="Description"
-                    auto-grow
-                    v-model="param.description"
-                    :success="errors.collect('description').length < 1"
-                  ></v-textarea>
-
+              <v-menu offset-y>
+                <template v-slot:activator="{ on }">
                   <v-btn
-                    block outline color="error"
-                    @click="remove_parameter(index)"
+                    block outline color="secondary"
+                    v-on="on"
                   >
-                    <v-icon left dark>delete</v-icon>
-                    Delete Parameter
+                    Add a parameter
                   </v-btn>
+                </template>
+                <v-list>
+                  <v-list-tile
+                    v-for="(type, index) in parameters_types"
+                    :key="index"
+                    @click="add_parameters(type.name)"
+                  >
+                    <v-list-tile-title>{{ type.name }}</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
 
-                </v-card-text>
-              </v-card>
+              <div>
+                <v-card
+                  v-for="(param, index) in parameters"
+                  :key="index"
+                  flat elevation="0" style="border: solid 1px #e6e6e6;" class="mt-3"
+                >
+                  <v-card-text>
+                    <v-text-field
+                      v-model="param.name"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('name')"
+                      label="Name"
+                      data-vv-name="name"
+                      required
+                      :success="errors.collect('name').length < 1"
+                    ></v-text-field>
+
+                    <v-checkbox
+                      v-if="param.type === 'boolean'"
+                      v-model="param.default_value"
+                      label="Default Value"
+                      hide-details
+                    ></v-checkbox>
+
+                    <v-text-field
+                      v-if="param.type === 'string'"
+                      v-model="param.default_value"
+                      label="Default Value"
+                      :success="errors.collect('default_value').length < 1"
+                    ></v-text-field>
+
+                    <v-combobox
+                      v-if="param.type === 'choice'"
+                      v-model="param.values"
+                      :items="param.values"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('values')"
+                      label="Values"
+                      data-vv-name="values"
+                      multiple
+                      chips
+                      :success="param.values.length > 0"
+                    ></v-combobox>
+
+                    <v-checkbox
+                      v-model="param.is_maven_param"
+                      label="Is Maven Param"
+                      hide-details
+                    ></v-checkbox>
+
+                    <v-text-field
+                      v-if="param.is_maven_param"
+                      v-model="param.maven_key"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('maven_key')"
+                      label="Maven Name"
+                      data-vv-name="maven_key"
+                      required
+                      :success="errors.collect('maven_key').length < 1"
+                    ></v-text-field>
+
+                    <v-checkbox
+                      v-model="param.is_parameterizable"
+                      label="Render a Job Parameter"
+                      hide-details
+                    ></v-checkbox>
+                    <v-textarea
+                      label="Description"
+                      auto-grow
+                      v-model="param.description"
+                      :success="errors.collect('description').length < 1"
+                    ></v-textarea>
+
+                    <v-btn
+                      block outline color="error"
+                      @click="remove_parameter(index)"
+                    >
+                      <v-icon left dark>delete</v-icon>
+                      Delete Parameter
+                    </v-btn>
+
+                  </v-card-text>
+                </v-card>
+
+              </div>
 
               <v-menu offset-y>
                 <template v-slot:activator="{ on }">
@@ -250,7 +275,9 @@
         .then(response => {
           this.loadingScreen = false
           this.platform = response.data.data
-          if (!this.platform.hasOwnProperty('default_parameters')) {
+          if (this.platform.hasOwnProperty('default_parameters')) {
+            this.parameters = this.platform['default_parameters']
+          } else {
             this.platform['default_parameters'] = []
           }
         })
@@ -309,7 +336,7 @@
                 maven_key: '',
                 is_parameterizable: true,
                 is_maven_param: true,
-                default_value: '',
+                default_value: false,
                 type: 'boolean',
                 description: ''
               }

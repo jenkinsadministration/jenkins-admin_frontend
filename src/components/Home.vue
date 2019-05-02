@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-layout>
-      <v-responsive>
+      <v-responsive style="width: 100%;">
         <v-container fill-height>
           <v-layout align-center class="pa-5 white" style="border-radius: 6px;">
             <v-flex>

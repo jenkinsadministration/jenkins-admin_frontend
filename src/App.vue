@@ -129,6 +129,7 @@
 
   main {
     margin-top: 80px;
+    margin-bottom: 40px;
   }
 
   .v-card {
