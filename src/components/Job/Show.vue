@@ -60,6 +60,16 @@
           </v-card-text>
         </v-card>
 
+        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('slack_channel')">
+          <v-card-text>
+            <div class="headline mb-3">Slack</div>
+
+            <v-label>Slack Channel</v-label>
+            <p>{{job.setup.slack_channel}}</p>
+
+          </v-card-text>
+        </v-card>
+
         <v-card class="mt-4" v-if="job.setup.hasOwnProperty('athenea_project')">
           <v-card-text>
             <div class="headline mb-3">Athenea</div>

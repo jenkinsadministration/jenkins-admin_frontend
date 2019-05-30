@@ -123,6 +123,22 @@
 
           <v-card class="mt-4">
             <v-card-text>
+              <div class="headline mb-3">Slack</div>
+
+              <v-text-field
+                v-model="job.setup.slack_channel"
+                :error-messages="errors.collect('slack_channel')"
+                label="Slack Channel"
+                data-vv-name="Slack Channel"
+                required
+                :success="errors.collect('slack_channel').length < 1"
+              ></v-text-field>
+
+            </v-card-text>
+          </v-card>
+
+          <v-card class="mt-4">
+            <v-card-text>
               <div class="headline mb-3">Athenea</div>
 
               <v-text-field
@@ -311,6 +327,7 @@
             environment_id: '',
             project_id: ''
           },
+          slack_channel: '',
           parameters: [
             {
               name: '',
@@ -367,6 +384,9 @@
             this.job.setup['parameters'] = []
           } else {
             this.parameters = this.job.setup.parameters
+          }
+          if (!this.job.setup.hasOwnProperty('slack_channel')) {
+            this.job.setup['slack_channel'] = ''
           }
           if (!this.job.setup.hasOwnProperty('athenea_project')) {
             this.job.setup['athenea_project'] = {
