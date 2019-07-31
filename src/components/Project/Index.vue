@@ -92,10 +92,10 @@
 
               </v-toolbar>
 
-              <v-subheader inset v-if="item.data.hasOwnProperty('build_jobs')">Build Jobs</v-subheader>
+              <v-subheader inset v-if="item.data.hasOwnProperty('jobs') && item.data.jobs.hasOwnProperty('build') && item.data.hasOwnProperty('build_jobs')">Build Jobs</v-subheader>
 
               <v-list-tile
-                v-if="item.data.hasOwnProperty('build_jobs')"
+                v-if="item.data.hasOwnProperty('jobs') && item.data.jobs.hasOwnProperty('build') && item.data.hasOwnProperty('build_jobs')"
                 v-for="(job, id) in item.data.jobs.build"
                 :key="id"
                 style="cursor: pointer"
@@ -117,10 +117,10 @@
                 </v-list-tile-action>
               </v-list-tile>
 
-              <v-subheader inset v-if="item.data.hasOwnProperty('test_jobs')">Test Jobs</v-subheader>
+              <v-subheader inset v-if="item.data.hasOwnProperty('jobs') && item.data.hasOwnProperty('test_jobs')">Test Jobs</v-subheader>
 
               <v-list-tile
-                v-if="item.data.hasOwnProperty('test_jobs')"
+                v-if="item.data.hasOwnProperty('jobs') && item.data.hasOwnProperty('test_jobs')"
                 v-for="(job, id) in item.data.jobs.test"
                 :key="id"
                 style="cursor: pointer"

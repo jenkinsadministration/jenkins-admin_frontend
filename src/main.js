@@ -13,7 +13,7 @@ const AlertCmp = () => import('./components/Shared/Alert.vue')
 Vue.use(Vuetify, {
   theme: {
     primary: '#F52F41',
-    secondary: '#2196f3',
+    secondary: '#00BDED',
     accent: '#8bc34a',
     error: '#f44336',
     warning: '#ffc107',

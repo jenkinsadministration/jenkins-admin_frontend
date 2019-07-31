@@ -6,6 +6,12 @@
         <v-divider class="my-3"></v-divider>
       </v-flex>
     </v-layout>
+    <v-layout wrap justify-space-between>
+      <v-flex>
+        <v-btn to="/projects" class="mb-4">Back</v-btn>
+        <v-btn :to="'./' + id +'/edit'" color="secondary" class="mb-4">Edit</v-btn>
+      </v-flex>
+    </v-layout>
     <v-layout wrap justify-space-between v-if="loadingScreen">
       <v-progress-linear :indeterminate="true"></v-progress-linear>
     </v-layout>
@@ -60,7 +66,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('slack_channel')">
+        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('slack_channel') && job.setup.slack_channel !== ''">
           <v-card-text>
             <div class="headline mb-3">Slack</div>
 
@@ -70,7 +76,38 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('athenea_project')">
+        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('job_of_test') && job.setup.job_of_test !== ''">
+          <v-card-text>
+            <div class="headline mb-3">Job of Tests</div>
+
+            <v-label>Job of Tests</v-label>
+            <p>{{job.setup.job_of_test}}</p>
+
+          </v-card-text>
+        </v-card>
+
+        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('app_extension') && job.setup.app_extension !== ''">
+          <v-card-text>
+            <div class="headline mb-3">Build Extension</div>
+
+            <v-label>Build Extension</v-label>
+            <p>{{job.setup.app_extension}}</p>
+
+          </v-card-text>
+        </v-card>
+
+        <v-card class="mt-4" v-if="job.setup.hasOwnProperty('peya_app_id') && job.setup.peya_app_id !== ''">
+          <v-card-text>
+            <div class="headline mb-3">Peya Apps</div>
+
+            <v-label>Peya App Id</v-label>
+            <p>{{job.setup.peya_app_id}}</p>
+
+          </v-card-text>
+        </v-card>
+
+        <v-card class="mt-4"
+                v-if="job.setup.hasOwnProperty('athenea_project') && job.setup.athenea_project.project_id !== ''">
           <v-card-text>
             <div class="headline mb-3">Athenea</div>
 
@@ -120,9 +157,8 @@
     </v-layout>
     <v-layout wrap justify-space-between>
       <v-flex>
-        <v-divider></v-divider>
-        <v-btn to="/projects">Back</v-btn>
-        <v-btn :to="'./' + id +'/edit'" color="secondary">Edit</v-btn>
+        <v-btn to="/projects" class="mt-4">Back</v-btn>
+        <v-btn :to="'./' + id +'/edit'" color="secondary" class="mt-4">Edit</v-btn>
       </v-flex>
     </v-layout>
   </v-container>

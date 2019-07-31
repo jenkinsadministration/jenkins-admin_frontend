@@ -39,7 +39,6 @@
                 :error-messages="errors.collect('path')"
                 label="Path"
                 data-vv-name="path"
-                required
                 :success="errors.collect('path').length < 1"
               ></v-text-field>
             </v-card-text>

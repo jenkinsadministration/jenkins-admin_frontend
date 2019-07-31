@@ -20,6 +20,18 @@
           novalidate
         >
 
+          <v-btn to="/projects">Back</v-btn>
+          <v-btn @click="submit"
+                 class="secondary"
+                 :disabled="$validator.errors.count() > 0 || loadingSave"
+                 :loading="loadingSave"
+          >
+            <v-icon left dark>save</v-icon>
+            Save
+          </v-btn>
+
+          <v-divider class="mt-4 mb-3"></v-divider>
+
           <v-card>
             <v-card-text>
               <div class="headline mb-3">General Information</div>
@@ -27,16 +39,15 @@
               <v-text-field
                 v-model="job.full_name"
                 label="Path"
-                readonly
                 :success="true"
               ></v-text-field>
 
-              <v-text-field
+              <v-select
                 v-model="job.setup.template"
+                :items="get_template()"
                 label="Template"
-                readonly
                 :success="true"
-              ></v-text-field>
+              ></v-select>
 
               <v-text-field
                 v-model="job.platform"
@@ -72,12 +83,12 @@
 
               <v-text-field
                 v-model="job.setup.branch"
-                v-validate="'required'"
                 :error-messages="errors.collect('branch')"
                 label="Branch"
                 data-vv-name="branch"
-                required
                 :success="errors.collect('branch').length < 1"
+                hint="Leave blank to config a custom branch setup"
+                persistent-hint
               ></v-text-field>
 
             </v-card-text>
@@ -137,6 +148,47 @@
             </v-card-text>
           </v-card>
 
+          <v-card class="mt-4" v-if="job.type === 'BUILD'">
+            <v-card-text>
+              <div class="headline mb-3">Job of Tests</div>
+
+              <v-text-field
+                v-model="job.setup.job_of_test"
+                label="Job of Tests"
+                success
+              ></v-text-field>
+
+            </v-card-text>
+          </v-card>
+
+          <v-card class="mt-4" v-if="job.type === 'BUILD'">
+            <v-card-text>
+              <div class="headline mb-3">Build Extension</div>
+
+              <v-select
+                v-model="job.setup.app_extension"
+                :items="get_ios_app_extension()"
+                label="Build Extension"
+                :success="true"
+              ></v-select>
+
+            </v-card-text>
+          </v-card>
+
+          <v-card class="mt-4" v-if="job.type === 'BUILD'">
+
+            <v-card-text>
+              <div class="headline mb-3">Peya Apps</div>
+
+              <v-text-field
+                v-model="job.setup.peya_app_id"
+                label="Peya App Id"
+                success
+              ></v-text-field>
+
+            </v-card-text>
+          </v-card>
+
           <v-card class="mt-4">
             <v-card-text>
               <div class="headline mb-3">Athenea</div>
@@ -164,88 +216,121 @@
 
           <v-card class="mt-4">
             <v-card-text>
-              <div class="headline mb-3">Parameters</div>
-              <v-card
-                v-for="(param, index) in parameters"
-                :key="index"
-                flat elevation="0" style="border: solid 1px #e6e6e6;" class="mt-3"
-              >
-                <v-card-text>
-                  <v-text-field
-                    v-model="param.name"
-                    v-validate="'required'"
-                    :error-messages="errors.collect('name')"
-                    label="Name"
-                    data-vv-name="name"
-                    required
-                    :success="errors.collect('name').length < 1"
-                  ></v-text-field>
 
-                  <v-checkbox
-                    v-if="param.type === 'boolean'"
-                    v-model="param.default_value"
-                    label="Default Value"
-                    hide-details
-                  ></v-checkbox>
+              <div class="headline mb-3">Default Parameters</div>
 
-                  <v-text-field
-                    v-if="param.type === 'string'"
-                    v-model="param.default_value"
-                    label="Default Value"
-                    :success="errors.collect('default_value').length < 1"
-                  ></v-text-field>
-                  <v-combobox
-                    v-if="param.type === 'choice'"
-                    v-model="param.values"
-                    :items="param.values"
-                    v-validate="'required'"
-                    :error-messages="errors.collect('values')"
-                    label="Values"
-                    data-vv-name="values"
-                    multiple
-                    chips
-                    :success="param.values.length > 0"
-                  ></v-combobox>
-
-                  <v-checkbox
-                    v-model="param.is_maven_param"
-                    label="Is Maven Param"
-                    hide-details
-                  ></v-checkbox>
-
-                  <v-text-field
-                    v-if="param.is_maven_param"
-                    v-model="param.maven_key"
-                    v-validate="'required'"
-                    :error-messages="errors.collect('maven_key')"
-                    label="Maven Name"
-                    data-vv-name="maven_key"
-                    required
-                    :success="errors.collect('maven_key').length < 1"
-                  ></v-text-field>
-
-                  <v-checkbox
-                    v-model="param.is_parameterizable"
-                    label="Render a Job Parameter"
-                    hide-details
-                  ></v-checkbox>
-                  <v-textarea
-                    label="Description"
-                    auto-grow
-                    v-model="param.description"
-                    :success="errors.collect('description').length < 1"
-                  ></v-textarea>
-
+              <v-menu offset-y>
+                <template v-slot:activator="{ on }">
                   <v-btn
-                    block outline color="error"
-                    @click="remove_parameter(index)"
+                    block outline color="secondary"
+                    v-on="on"
                   >
-                    <v-icon left dark>delete</v-icon>
-                    Delete Parameter
+                    Add a parameter
                   </v-btn>
+                </template>
+                <v-list>
+                  <v-list-tile
+                    v-for="(type, index) in parameters_types"
+                    :key="index"
+                    @click="add_parameters(type.name)"
+                  >
+                    <v-list-tile-title>{{ type.name }}</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
 
-                </v-card-text>
-              </v-card>
+              <div>
+                <v-card
+                  v-for="(param, index) in parameters"
+                  :key="index"
+                  flat elevation="0" style="border: solid 1px #e6e6e6;" class="mt-3"
+                >
+                  <v-card-text>
+                    <v-text-field
+                      v-model="param.name"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('name')"
+                      label="Name"
+                      data-vv-name="name"
+                      required
+                      :success="errors.collect('name').length < 1"
+                    ></v-text-field>
+
+                    <v-checkbox
+                      v-if="param.type === 'boolean'"
+                      v-model="param.default_value"
+                      label="Default Value"
+                      hide-details
+                    ></v-checkbox>
+
+                    <v-text-field
+                      v-if="param.type === 'string'"
+                      v-model="param.default_value"
+                      label="Default Value"
+                      :success="errors.collect('default_value').length < 1"
+                    ></v-text-field>
+
+                    <v-textarea
+                      v-if="param.type === 'text'"
+                      v-model="param.default_value"
+                      label="Default Value"
+                      :success="errors.collect('default_value').length < 1"
+                    ></v-textarea>
+
+                    <v-combobox
+                      v-if="param.type === 'choice'"
+                      v-model="param.values"
+                      :items="param.values"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('values')"
+                      label="Values"
+                      data-vv-name="values"
+                      multiple
+                      chips
+                      :success="param.values.length > 0"
+                    ></v-combobox>
+
+                    <v-checkbox
+                      v-model="param.is_maven_param"
+                      label="Is Maven Param"
+                      hide-details
+                    ></v-checkbox>
+
+                    <v-text-field
+                      v-if="param.is_maven_param"
+                      v-model="param.maven_key"
+                      v-validate="'required'"
+                      :error-messages="errors.collect('maven_key')"
+                      label="Maven Name"
+                      data-vv-name="maven_key"
+                      required
+                      :success="errors.collect('maven_key').length < 1"
+                    ></v-text-field>
+
+                    <v-checkbox
+                      v-model="param.is_parameterizable"
+                      label="Render a Job Parameter"
+                      hide-details
+                    ></v-checkbox>
+                    <v-textarea
+                      label="Description"
+                      auto-grow
+                      v-model="param.description"
+                      :success="errors.collect('description').length < 1"
+                    ></v-textarea>
+
+                    <v-btn
+                      block outline color="error"
+                      @click="remove_parameter(index)"
+                    >
+                      <v-icon left dark>delete</v-icon>
+                      Delete Parameter
+                    </v-btn>
+
+                  </v-card-text>
+                </v-card>
+
+              </div>
 
               <v-menu offset-y>
                 <template v-slot:activator="{ on }">
@@ -328,6 +413,7 @@
             project_id: ''
           },
           slack_channel: '',
+          job_of_test: '',
           parameters: [
             {
               name: '',
@@ -348,6 +434,9 @@
         },
         {
           name: 'String'
+        },
+        {
+          name: 'Text'
         },
         {
           name: 'Choice'
@@ -388,6 +477,9 @@
           if (!this.job.setup.hasOwnProperty('slack_channel')) {
             this.job.setup['slack_channel'] = ''
           }
+          if (!this.job.setup.hasOwnProperty('job_of_test')) {
+            this.job.setup['job_of_test'] = ''
+          }
           if (!this.job.setup.hasOwnProperty('athenea_project')) {
             this.job.setup['athenea_project'] = {
               environment_id: '',
@@ -422,6 +514,44 @@
             }
           })
       },
+      get_ios_app_extension () {
+        switch (this.job.platform) {
+          case 'iOS':
+            return ['.app', '.ipa']
+          case 'Android':
+            return ['.apk']
+          default:
+            return []
+        }
+      },
+      get_template () {
+        if (this.job.type === 'TEST') {
+          return ['test_template.xml']
+        } else {
+          switch (this.job.platform) {
+            case 'iOS':
+              return [
+                'build_ios_pedidosya_template.xml', 'build_ios_pedidosya_custom_branch_template.xml',
+                'build_ios_domicilio_template.xml', 'build_ios_domicilio_custom_branch_template.xml',
+                'build_ios_apetito24_template.xml', 'build_ios_apetito24_custom_branch_template.xml',
+                'build_ios_app_release.xml', 'build_ios_app_release_by_squad.xml', 'build_ios_pr_checker.xml'
+              ]
+            case 'Android':
+              return [
+                'build_android_pedidosya_template.xml', 'build_android_pedidosya_custom_branch_template.xml',
+                'build_android_domicilio_template.xml', 'build_android_domicilio_custom_branch_template.xml',
+                'build_android_apetito24_template.xml', 'build_android_apetito24_custom_branch_template.xml',
+                'build_android_app_release.xml', 'build_android_app_release_by_squad.xml', 'build_android_pr_checker.xml'
+              ]
+            case 'Web':
+              return [
+                'build_web_template.xml'
+              ]
+            default:
+              return
+          }
+        }
+      },
       add_parameters (type) {
         switch (type) {
           case 'String':
@@ -433,6 +563,19 @@
                 is_maven_param: true,
                 default_value: '',
                 type: 'string',
+                description: ''
+              }
+            )
+            break
+          case 'Text':
+            this.parameters.push(
+              {
+                name: '',
+                maven_key: '',
+                is_parameterizable: true,
+                is_maven_param: true,
+                default_value: '',
+                type: 'text',
                 description: ''
               }
             )

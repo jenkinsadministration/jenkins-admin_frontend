@@ -3,5 +3,5 @@ var prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  API_URI: '"http://localhost:5000/jenkinsadmin/us-central1/api"',
+  API_URI: '"https://us-central1-jenkinsadmin.cloudfunctions.net/api"',
 })
